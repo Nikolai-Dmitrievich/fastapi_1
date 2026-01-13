@@ -1,6 +1,6 @@
 import datetime
 from typing import Literal
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class SuccessResponse(BaseModel):
     status: Literal["success"]
@@ -12,7 +12,7 @@ class IdResponse(BaseModel):
 class CreateAdvertisementsRequest(BaseModel):
     title: str
     description: str
-    price: float
+    price: float = Field(gt=0)
     author: str
 
 
