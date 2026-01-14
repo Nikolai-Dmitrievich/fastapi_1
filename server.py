@@ -35,8 +35,6 @@ async def create_advertisements(advertisement: CreateAdvertisementsRequest, sess
 @app.get('/api/v1/advertisement/{advertisement_id}', response_model=GetAdvertisementsResponse, status_code=200)
 async def get_advertisements(advertisement_id: int, session: SessionDependency):
     advertisement_orm_obj = await crud.get_id_item(session, models.Advertisement, advertisement_id)
-    if not advertisement_orm_obj:
-        raise HTTPException(status_code=404, detail="Not found")
     return advertisement_orm_obj.id_dict
 
 
@@ -69,8 +67,6 @@ async def search_advertisements(
 async def update_advertisements(advertisement_id: int, advertisement_data: UpdateAdvertisementsRequest, session: SessionDependency):
     advertisement_dict = advertisement_data.model_dump(exclude_unset=True)
     advertisement_orm_obj = await crud.get_id_item(session, models.Advertisement, advertisement_id)
-    if not advertisement_orm_obj:
-        raise HTTPException(status_code=404, detail="Not found")
     for key, value in advertisement_dict.items():
         setattr(advertisement_orm_obj, key, value)
     await session.commit()
@@ -81,6 +77,4 @@ async def update_advertisements(advertisement_id: int, advertisement_data: Updat
 @app.delete('/api/v1/advertisement/{advertisement_id}', status_code=204)
 async def delete_advertisements(advertisement_id: int, session: SessionDependency):
     advertisement_orm_obj = await crud.get_id_item(session, models.Advertisement, advertisement_id)
-    if not advertisement_orm_obj:
-        raise HTTPException(status_code=404, detail="Not found")
     await crud.delete_item(session, advertisement_orm_obj)
