@@ -1,6 +1,7 @@
 import datetime
+from uuid import UUID
 from typing import Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 from typing import Optional
 
 
@@ -16,7 +17,6 @@ class CreateAdvertisementsRequest(BaseModel):
     title: str
     description: str
     price: float = Field(gt=0)
-    author: str
 
 
 class CreateAdvertisementsResponse(IdResponse):
@@ -37,7 +37,7 @@ class GetAdvertisementsResponse(BaseModel):
     title: str
     description: str
     price: float
-    author: str
+    author: Optional[str] = None
     created: datetime.datetime
 
 
@@ -46,4 +46,45 @@ class SearchAdvertisementsResponse(BaseModel):
 
 
 class DeleteAdvertisementsResponse(SuccessResponse):
+    pass
+
+class BaseUserRequest(BaseModel):
+    login: str
+    password: str
+
+    @field_validator('password')
+    @classmethod
+    def secure_password(cls, v: str | None):
+        if v and len(v) < 8:
+            raise ValueError('Пароль не может быть меньше 8 символов')
+        return v
+
+
+class CreateUserRequest(BaseUserRequest):
+    pass
+
+
+class LoginRequest(BaseUserRequest):
+    pass
+
+
+class LoginResponse(BaseModel):
+    token: UUID
+
+
+class CreateUserResponse(IdResponse):
+    pass
+
+class GetUserResponse(BaseModel):
+    id: int
+    login: str
+
+class UpdateUserRequest(BaseModel):
+    login: str | None = None
+    password: str | None = None
+
+class UpdateUserResponse(SuccessResponse):
+    pass
+
+class DeleteUserResponse(SuccessResponse):
     pass
